@@ -99,7 +99,6 @@ class Output:
             if time.time() - self.__parent.start_time >= \
                     self.__parent.split_every:  # split file every 1800s
                 self.__init_log_file()
-                self.__parent.start_time = time.time()
 
         return self.time, self.x / 9.80665, self.y / 9.80665, self.z / 9.80665
 
@@ -128,24 +127,28 @@ class Output:
         QtGui.QApplication.processEvents()
 
     def __init_log_file(self) -> None:
-        self._date = datetime.today().strftime("%d-%m-%Y")
+        self.__date = datetime.today().strftime("%d-%m-%Y")
 
         if not os.path.exists("data"):
             os.mkdir("data")
 
-        if not os.path.exists(f"data/{self._date}"):
-            os.mkdir(f"data/{self._date}")
+        if not os.path.exists(f"data/{self.__date}"):
+            os.mkdir(f"data/{self.__date}")
 
         self.__log_file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        self.start_time = time.time()
 
-        with open(f'data/{self._date}/{self.__log_file_name}.csv',
+        with open(f'data/{self.__date}/{self.__log_file_name}.csv',
                   newline='', mode="w") as f:
             writer = csv.writer(f)
-            writer.writerow(['startTime', self.__parent.start_time])
+            writer.writerow(['startTime', self.start_time])
             writer.writerow(['time', 'x', 'y', 'z'])
 
     def log_file(self) -> None:
-        with open(f'data/{self._date}/{self.__log_file_name}.csv',
+        if not os.path.exists(f'data/{self.__date}/{self.__log_file_name}.csv'):
+            self.__init_log_file()
+
+        with open(f'data/{self.__date}/{self.__log_file_name}.csv',
                   newline='', mode="a") as f:
             writer = csv.writer(f)
             for t, x, y, z in zip(self.__time, self.__x, self.__y, self.__z):
