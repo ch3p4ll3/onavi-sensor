@@ -3,7 +3,7 @@ Python library for reading and logging data read by an ONAVI seismic sensor
 
 ## How it works
 The library opens a serial communication with the sensor(115.2K baud, 8 bytes, no parity, 1 sto bt, dtr control enable, rts control enable, flow control disable) and by sending 0x2a the sensor returns raw data.
-The subsequent read from the COM port should yield the ONavi data as a string formatted **XXYYZZC, the first two characters are ** for the 12-bit sensor and ## for the 16-bit sensor and $$ for 24-bit sensor.  
+The subsequent read from the COM port should yield the ONavi data as a string formatted \**XXYYZZC, the first two characters are \** for the 12-bit sensor and ## for the 16-bit sensor and $$ for 24-bit sensor.  
 
 ### ONavi class
 |   Method   |  Return type |                                                                                                                                        Description                                                                                                                                                                  |
@@ -18,8 +18,6 @@ The subsequent read from the COM port should yield the ONavi data as a string fo
 | Output     | Output object | Constructor of the object                                                                            |
 | to_tuple   | tuple         | puts the values converted in m/s/s in a tuple (time passed since the start of the readings, x, y, z) |
 | to_g       | tuple         | converts values from m/s/s to g                                                                      |
-| log_file   | None          | save to a file the last readings (not to use)                                                        |
-
 
 For more information read [here](https://github.com/carlgt1/qcn/blob/master/doc/onavi_prog.txt)
 
@@ -27,6 +25,7 @@ For more information read [here](https://github.com/carlgt1/qcn/blob/master/doc/
 Small example of how the code works
 ``` python
 from onavi import ONavi
+import time
 
 sensor = ONavi("/dev/ttyACM0", scaled_values=True, log=True, real_time_plot=False)
 while True:
@@ -34,6 +33,7 @@ while True:
         reading = sensor.read()  # reads the values returned by the sensor and converts them to m/s/s
         mss = reading.to_tuple()  # puts the values in a tuple (time passed since the start of the readings, x, y, z)
         g = reading.to_g()  # converts values from m/s/s to g
+        time.sleep(.019)
     except KeyboardInterrupt:
         sensor.close()
         break

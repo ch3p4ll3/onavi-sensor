@@ -19,6 +19,7 @@ from pyqtgraph.Qt import QtGui
 
 class Output:
     def __init__(self, parent) -> None:
+        """Output class"""
         self.x = .0
         self.y = .0
         self.z = .0

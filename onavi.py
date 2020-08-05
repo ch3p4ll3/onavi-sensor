@@ -10,6 +10,7 @@ from out import Output
 class ONavi:
     def __init__(self, port, log=False, scaled_values=True,
                  split_every=1800, real_time_plot=False) -> None:
+        """Main class"""
         self.port = port
         self.start_time = time.time()
         self.log = log
@@ -85,7 +86,6 @@ class ONavi:
             self.__ser.write(b'\x2a')
             incoming = self.__ser.read(9)
             parsed = self.__parse_input(incoming)
-            time.sleep(.019)
 
             return parsed
 
