@@ -31,7 +31,6 @@ class Output:
         self.__y = []
         self.__z = []
         self.__time = []
-        self._date = None
 
         if self.__parent.real_time_plot:
             self.app = QtGui.QApplication(sys.argv)
@@ -127,29 +126,42 @@ class Output:
         self.curve_z.setPos(self.ptr, 0)
         QtGui.QApplication.processEvents()
 
-    def __init_log_file(self) -> None:
-        self.__date = datetime.today().strftime("%d-%m-%Y")
-
+    def create_dirs(self):
+        self._year = datetime.today().year
+        self._month = datetime.today().month
+        self._date = datetime.today().strftime("%d-%m-%Y")
         if not os.path.exists("data"):
             os.mkdir("data")
 
-        if not os.path.exists(f"data/{self.__date}"):
-            os.mkdir(f"data/{self.__date}")
+        if not os.path.exists(f"data/{self._year}"):
+            os.mkdir(f"data/{self._year}")
 
-        self.__log_file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        if not os.path.exists(f"data/{self._year}/{self._month}"):
+            os.mkdir(f"data/{self._year}/{self._month}")
+
+        if not os.path.exists(f"data/{self._year}/{self._month}/{self._date}"):
+            os.mkdir(f"data/{self._year}/{self._month}/{self._date}")
+
+    def __init_log_file(self) -> None:
+        self.create_dirs()
+
+        self.__log_file_name = datetime.now().strftime("%H-%M-%S")
         self.start_time = time.time()
 
-        with open(f'data/{self.__date}/{self.__log_file_name}.csv',
+        with open(f"data/{self._year}/{self._month}/"
+                  f"{self._date}/{self.__log_file_name}.csv",
                   newline='', mode="w") as f:
             writer = csv.writer(f)
             writer.writerow(['startTime', self.start_time])
             writer.writerow(['time', 'x', 'y', 'z'])
 
     def log_file(self) -> None:
-        if not os.path.exists(f'data/{self.__date}/{self.__log_file_name}.csv'):
+        if not os.path.exists(f"data/{self._year}/{self._month}/{self._date}"
+                              f"/{self.__log_file_name}.csv"):
             self.__init_log_file()
 
-        with open(f'data/{self.__date}/{self.__log_file_name}.csv',
+        with open(f"data/{self._year}/{self._month}/{self._date}/"
+                  f"{self.__log_file_name}.csv",
                   newline='', mode="a") as f:
             writer = csv.writer(f)
             for t, x, y, z in zip(self.__time, self.__x, self.__y, self.__z):
