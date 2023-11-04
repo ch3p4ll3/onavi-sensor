@@ -5,7 +5,6 @@ from logger import Logger
 def main():
     sensor = OnaviSensor()
 
-
     with Logger(sensor) as logger:
         logger.loop()
 
